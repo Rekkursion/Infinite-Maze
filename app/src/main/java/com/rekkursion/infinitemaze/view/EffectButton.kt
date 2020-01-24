@@ -9,6 +9,8 @@ class EffectButton(context: Context, attrs: AttributeSet?): Button(context, attr
     // the passed context
     private val mContext = context
 
+    /* ================================================================ */
+
     override fun setOnClickListener(listener: OnClickListener?) {
         val l = OnClickListener {
             startAnimation(createClickedAnimation())

@@ -11,6 +11,8 @@ object AnimationManager {
     // to store the views which have started any animation-set
     private val mAddedSubjects = HashSet<View>()
 
+    /* ================================================================ */
+
     // build an animation-set by animation ids
     fun buildAnimationSet(context: Context, vararg ids: Int): AnimationSet {
         val animSet = AnimationSet(true)
