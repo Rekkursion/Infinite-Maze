@@ -1,8 +1,5 @@
 package com.rekkursion.infinitemaze.utils
 
-import android.util.Log
-import java.util.*
-
 class Maze private constructor() {
     class Builder {
         private val mInstance = Maze()
@@ -14,18 +11,33 @@ class Maze private constructor() {
             return this
         }
 
-        fun setStartLocation(x: Int, y: Int): Builder {
-            mInstance.mStartLoc.x = x
+        // set if this maze is closed or not
+        fun setIsClosed(isClosed: Boolean): Builder {
+            mInstance.mIsClosed = isClosed
+            return this
+        }
+
+        // set the start location of this maze
+        fun setStartLocation(
+            y: Int = if (mInstance.mIsClosed && mInstance.mHeight > 1) 1 else 0,
+            x: Int = if (mInstance.mIsClosed && mInstance.mWidth > 1) 1 else 0
+        ): Builder {
             mInstance.mStartLoc.y = y
+            mInstance.mStartLoc.x = x
             return this
         }
 
-        fun setEndLocation(x: Int, y: Int): Builder {
-            mInstance.mEndLoc.x = x
+        // set the end location of this maze
+        fun setEndLocation(
+            y: Int = mInstance.mHeight - if (mInstance.mIsClosed && mInstance.mHeight > 1) 2 else 1,
+            x: Int = mInstance.mWidth - if (mInstance.mIsClosed && mInstance.mWidth > 1) 2 else 1
+        ): Builder {
             mInstance.mEndLoc.y = y
+            mInstance.mEndLoc.x = x
             return this
         }
 
+        // create this maze
         fun create(): Maze {
             return mInstance.generate()
         }
@@ -38,6 +50,9 @@ class Maze private constructor() {
 
     // height of the maze
     private var mHeight = 1
+
+    // if the maze shall be closed or not
+    private var mIsClosed = true
 
     // the start location of the maze
     private var mStartLoc = Point(0, 0)
@@ -98,7 +113,10 @@ class Maze private constructor() {
     // helper function: judge if a certain location could be a path-block or not
     private fun canBePathBlockAt(y: Int, x: Int): Boolean {
         // if the passed (y, x) is out of range -> return false directly
-        if (y < 0 || x < 0 || y >= mWidth || x >= mHeight) return false
+        if (y < 0 || x < 0 || y >= mHeight || x >= mWidth) return false
+
+        // if the maze is closed -> the location at the outline cannot be a path-block
+        if (mIsClosed && (y == 0 || x == 0 || y == mHeight - 1 || x == mWidth - 1)) return false
 
         val curBlock = mBlocks[y][x]
         // if the passed (y, x) is a start- or an end- block -> return false

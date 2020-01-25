@@ -13,8 +13,9 @@ class MazeActivity: AppCompatActivity() {
 
         val m = Maze.Builder()
             .setSize(10, 10)
-            .setStartLocation(0, 0)
-            .setEndLocation(9, 9)
+            .setIsClosed(true)
+            .setStartLocation()
+            .setEndLocation()
             .create()
 
         Log.e("MAZE", "\n\n$m\n")
