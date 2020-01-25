@@ -11,6 +11,16 @@ class Point<T>(y: T, x: T) {
 
     /* ================================================================ */
 
+    // copy constructor
+    constructor(pt: Point<T>): this(pt.y, pt.x)
+
+    /* ================================================================ */
+
+    // set a new location
+    fun set(newY: T = mY, newX: T = mX): Point<T> { mY = newY; mX = newX; return this }
+
+    /* ================================================================ */
+
     operator fun component1(): T = mY
 
     operator fun component2(): T = mX
@@ -36,6 +46,6 @@ class Point<T>(y: T, x: T) {
     }
 
     override fun toString(): String {
-        return "Point(mX=$mX, mY=$mY)"
+        return String.format("(%02d, %02d)", mY, mX)
     }
 }

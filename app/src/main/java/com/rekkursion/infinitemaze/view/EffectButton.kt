@@ -11,15 +11,7 @@ class EffectButton(context: Context, attrs: AttributeSet?): Button(context, attr
 
     /* ================================================================ */
 
-    override fun setOnClickListener(listener: OnClickListener?) {
-        val l = OnClickListener {
-            startAnimation(createClickedAnimation())
-            listener?.onClick(it)
-        }
-
-        super.setOnClickListener(l)
-    }
-
+    // build the animation when clicking this effect-button
     private fun createClickedAnimation(): AnimationSet {
         val ret = AnimationSet(true)
         ret.interpolator = AccelerateDecelerateInterpolator()
@@ -33,5 +25,17 @@ class EffectButton(context: Context, attrs: AttributeSet?): Button(context, attr
         ret.addAnimation(fadeOutAnim)
 
         return ret
+    }
+
+    /* ================================================================ */
+
+    // override the set-on-click-listener to play the animation
+    override fun setOnClickListener(listener: OnClickListener?) {
+        val l = OnClickListener {
+            startAnimation(createClickedAnimation())
+            listener?.onClick(it)
+        }
+
+        super.setOnClickListener(l)
     }
 }

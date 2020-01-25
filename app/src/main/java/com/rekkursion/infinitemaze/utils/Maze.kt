@@ -22,8 +22,8 @@ class Maze private constructor() {
             y: Int = if (mInstance.mIsClosed && mInstance.mHeight > 1) 1 else 0,
             x: Int = if (mInstance.mIsClosed && mInstance.mWidth > 1) 1 else 0
         ): Builder {
-            mInstance.mStartLoc.y = y
-            mInstance.mStartLoc.x = x
+            mInstance.mStartLoc.set(y, x)
+            mInstance.mCurLoc.set(y, x)
             return this
         }
 
@@ -32,8 +32,7 @@ class Maze private constructor() {
             y: Int = mInstance.mHeight - if (mInstance.mIsClosed && mInstance.mHeight > 1) 2 else 1,
             x: Int = mInstance.mWidth - if (mInstance.mIsClosed && mInstance.mWidth > 1) 2 else 1
         ): Builder {
-            mInstance.mEndLoc.y = y
-            mInstance.mEndLoc.x = x
+            mInstance.mEndLoc.set(y, x)
             return this
         }
 
@@ -47,9 +46,11 @@ class Maze private constructor() {
 
     // width of the maze
     private var mWidth = 1
+    val width get() = mWidth
 
     // height of the maze
     private var mHeight = 1
+    val height get() = mHeight
 
     // if the maze shall be closed or not
     private var mIsClosed = true
@@ -60,6 +61,10 @@ class Maze private constructor() {
     // the end location of the maze
     private var mEndLoc = Point(0, 0)
 
+    // the current location, initially set to the start location
+    private var mCurLoc = Point(mStartLoc)
+    val curLocCopied get() = Point(mCurLoc)
+
     // the content of the maze
     private lateinit var mBlocks: Array<Array<BlockType>>
     val blocksCopied: Array<Array<BlockType>> get() {
@@ -69,6 +74,19 @@ class Maze private constructor() {
                 ret[k][j] = mBlocks[k][j]
         }
         return ret
+    }
+
+    /* ================================================================ */
+
+    // move the current location
+    fun moveCurrentLocation(dy: Int = 0, dx: Int = 0): Point<Int> {
+        val newY = mCurLoc.y + dy
+        val newX = mCurLoc.x + dx
+
+        return if (newY >= 0 && newX >= 0 && newY < mHeight && newX < mWidth && mBlocks[newY][newX].walkable)
+            mCurLoc.set(newY, newX)
+        else
+            mCurLoc
     }
 
     /* ================================================================ */
