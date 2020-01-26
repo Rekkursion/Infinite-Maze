@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:rowCount="2"
+              android:columnCount="3"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
+
+    <!-- up arrow -->
+    <ImageButton
+            android:id="@+id/imgbtn_up_arrow"
+            android:contentDescription="@string/str_up_arrow"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:background="@drawable/ic_up_arrow_black_24dp"
+            style="@style/style_arrow_key_img_btn" />
+
+    <!-- right arrow -->
+    <ImageButton
+            android:id="@+id/imgbtn_right_arrow"
+            android:contentDescription="@string/str_right_arrow"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_row="1"
+            android:layout_column="2"
+            android:background="@drawable/ic_right_arrow_black_24dp"
+            style="@style/style_arrow_key_img_btn" />
+
+    <!-- down arrow -->
+    <ImageButton
+            android:id="@+id/imgbtn_down_arrow"
+            android:contentDescription="@string/str_down_arrow"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:background="@drawable/ic_down_arrow_black_24dp"
+            style="@style/style_arrow_key_img_btn" />
+
+    <!-- left arrow -->
+    <ImageButton
+            android:id="@+id/imgbtn_left_arrow"
+            android:contentDescription="@string/str_left_arrow"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:background="@drawable/ic_left_arrow_black_24dp"
+            style="@style/style_arrow_key_img_btn" />
+</GridLayout>

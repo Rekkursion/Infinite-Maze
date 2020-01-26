@@ -23,4 +23,12 @@
         <item name="android:textSize">@dimen/dim_basic_effect_button_text_size</item>
         <item name="textAllCaps">true</item>
     </style>
+
+    <!-- style of an arrow-key img-btn -->
+    <style name="style_arrow_key_img_btn" parent="Widget.AppCompat.ButtonBar">
+        <item name="android:minWidth">50dp</item>
+        <item name="android:minHeight">50dp</item>
+        <item name="android:maxWidth">75dp</item>
+        <item name="android:maxHeight">75dp</item>
+    </style>
 </resources>

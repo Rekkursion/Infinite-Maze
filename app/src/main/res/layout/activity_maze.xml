@@ -21,6 +21,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="450dp" />
 
-        <!-- TODO -->
+        <!-- the control-bar for arrow keys -->
+        <com.rekkursion.infinitemaze.view.ControlBar
+                android:id="@+id/arrow_key_control_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.core.widget.NestedScrollView>

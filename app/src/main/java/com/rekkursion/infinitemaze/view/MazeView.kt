@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import com.rekkursion.infinitemaze.R
+import com.rekkursion.infinitemaze.utils.BlockType
 import com.rekkursion.infinitemaze.utils.Maze
 import com.rekkursion.infinitemaze.utils.Point
 import kotlin.math.max
@@ -66,6 +67,12 @@ class MazeView(context: Context, attrs: AttributeSet?): View(context, attrs) {
         invalidate()
     }
 
+    // move
+    fun makeMove(dy: Int, dx: Int) {
+        mMazeModel?.moveCurrentLocation(dy, dx)
+        invalidate()
+    }
+
     /* ================================================================ */
 
     // for setting the value of height as the same value of width
@@ -109,8 +116,13 @@ class MazeView(context: Context, attrs: AttributeSet?): View(context, attrs) {
                                 (rowIdx + 1) * blockSize - gap + MARGIN_OF_BLOCKS
                             )
 
-                            // set the color determined by the type of this block
-                            mPaint.color = blocks[rowIdx][colIdx].colorValueOnMazeView
+                            // set the color
+                            mPaint.color =
+                                if (rowIdx == maze.curY && colIdx == maze.curX)
+                                    BlockType.CURRENT.colorValueOnMazeView
+                                else
+                                    blocks[rowIdx][colIdx].colorValueOnMazeView
+
                             // render
                             canvas.drawRect(rect, mPaint)
                         }

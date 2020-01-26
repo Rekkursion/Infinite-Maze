@@ -64,6 +64,8 @@ class Maze private constructor() {
     // the current location, initially set to the start location
     private var mCurLoc = Point(mStartLoc)
     val curLocCopied get() = Point(mCurLoc)
+    val curY get() = curLocCopied.y
+    val curX get() = curLocCopied.x
 
     // the content of the maze
     private lateinit var mBlocks: Array<Array<BlockType>>

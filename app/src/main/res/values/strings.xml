@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Infinite Maze</string>
     <string name="str_start">Start</string>
+    <string name="str_up_arrow">Up arrow</string>
+    <string name="str_right_arrow">Right arrow</string>
+    <string name="str_down_arrow">Down arrow</string>
+    <string name="str_left_arrow">Left arrow</string>
 </resources>
