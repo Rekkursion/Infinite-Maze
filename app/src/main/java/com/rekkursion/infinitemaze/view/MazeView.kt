@@ -69,8 +69,33 @@ class MazeView(context: Context, attrs: AttributeSet?): View(context, attrs) {
 
     // move
     fun makeMove(dy: Int, dx: Int) {
-        mMazeModel?.moveCurrentLocation(dy, dx)
-        invalidate()
+        mMazeModel?.let { maze ->
+            // move the current location
+            maze.moveCurrentLocation(dy, dx)
+
+            // move the camera
+            if (maze.width > NUMBER_OF_COLS_ON_SCREEN) {
+                // for moving the camera, first compute the center of width, e.g., 15 / 2 = 7
+                val centerOfWidth = NUMBER_OF_COLS_ON_SCREEN / 2
+
+                // calculate the new location of the camera
+                val newCameraX = when {
+                    maze.curX <= centerOfWidth -> 0
+                    maze.height - maze.curX - 1 <= centerOfWidth -> maze.height - NUMBER_OF_COLS_ON_SCREEN
+                    else -> maze.curX - centerOfWidth
+                }
+                val newCameraY = when {
+                    maze.curY <= centerOfWidth -> 0
+                    maze.width - maze.curY - 1 <= centerOfWidth -> maze.width - NUMBER_OF_COLS_ON_SCREEN
+                    else -> maze.curY - centerOfWidth
+                }
+                // set the location of the camera
+                mCamera.set(newCameraY, newCameraX)
+            }
+
+            // re-render
+            invalidate()
+        }
     }
 
     /* ================================================================ */
@@ -110,10 +135,10 @@ class MazeView(context: Context, attrs: AttributeSet?): View(context, attrs) {
                         if (rowIdx < maze.height && colIdx < maze.width) {
                             // create a rect-f for rendering
                             val rect = RectF(
-                                colIdx * blockSize + gap + MARGIN_OF_BLOCKS,
-                                rowIdx * blockSize + gap + MARGIN_OF_BLOCKS,
-                                (colIdx + 1) * blockSize - gap + MARGIN_OF_BLOCKS,
-                                (rowIdx + 1) * blockSize - gap + MARGIN_OF_BLOCKS
+                                j * blockSize + gap + MARGIN_OF_BLOCKS,
+                                k * blockSize + gap + MARGIN_OF_BLOCKS,
+                                (j + 1) * blockSize - gap + MARGIN_OF_BLOCKS,
+                                (k + 1) * blockSize - gap + MARGIN_OF_BLOCKS
                             )
 
                             // set the color
