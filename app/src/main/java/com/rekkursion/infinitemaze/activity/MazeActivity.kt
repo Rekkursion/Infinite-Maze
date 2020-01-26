@@ -34,7 +34,7 @@ class MazeActivity: AppCompatActivity() {
 
     private fun initEvents() {
         // create the maze
-        mMazeView.setMaze(25, 25)
+        mMazeView.setMaze(50, 50)
 
         // events of clicking arrow-keys
         mControlBar.setOnArrowKeyClickListener(object: ControlBar.OnArrowKeyClickListener {
@@ -42,5 +42,9 @@ class MazeActivity: AppCompatActivity() {
                 mMazeView.makeMove(arrowType.dir.first, arrowType.dir.second)
             }
         })
+
+        mMazeView.setOnClickListener {
+            mMazeView.setMaze(50, 50)
+        }
     }
 }

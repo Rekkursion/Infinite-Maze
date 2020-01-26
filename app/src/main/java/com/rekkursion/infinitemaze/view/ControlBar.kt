@@ -50,19 +50,21 @@ class ControlBar(context: Context, attrs: AttributeSet? = null) : FrameLayout(co
     private fun initEvents() {
         // set the listener to all arrow keys
         mImgbtnArrows.forEachIndexed { index, imgbtnArrow ->
-            imgbtnArrow.setOnClickListener {
-//                mOnArrowKeyClickListener?.onArrowKeyClick(ArrowType.values()[index])
-            }
             imgbtnArrow.setOnTouchListener { _, motionEvent ->
                 when (motionEvent.action) {
                     // pressed (key down)
                     MotionEvent.ACTION_DOWN -> {
+                        if (mArrowKeyClickTimer != null) {
+                            mArrowKeyClickTimer?.cancel()
+                            mArrowKeyClickTimer?.purge()
+                            mArrowKeyClickTimer = null
+                        }
                         mArrowKeyClickTimer = Timer()
                         mArrowKeyClickTimer?.scheduleAtFixedRate(object: TimerTask() {
                             override fun run() {
                                 mOnArrowKeyClickListener?.onArrowKeyClick(ArrowType.values()[index])
                             }
-                        }, 0L, 100L)
+                        }, 0L, 140L)
                     }
 
                     // released (key up)

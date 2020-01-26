@@ -56,14 +56,44 @@ class MazeView(context: Context, attrs: AttributeSet?): View(context, attrs) {
         height: Int,
         isClosed: Boolean = true,
         startLoc: Point<Int> = if (isClosed) Point(1, 1) else Point(0, 0),
-        endLoc: Point<Int> = if (isClosed) Point(height - 2, width - 2) else Point(height - 1, width - 1)) {
+        endLoc: Point<Int> = if (isClosed) Point(height - 2, width - 2) else Point(height - 1, width - 1),
+        randomStartAndEndLocs: Boolean = true
+    ) {
+        // region determine the start location & end location
+        // for randomly choose the start location & end location
+        val rInt = kotlin.random.Random(System.currentTimeMillis())
+        // determine the start location if shall be random
+        val sLoc =
+            if (randomStartAndEndLocs)
+                Point(rInt.nextInt(if (isClosed) 1 else 0, if (isClosed) height - 1 else height), rInt.nextInt(if (isClosed) 1 else 0, if (isClosed) width - 1 else width))
+            else
+                startLoc
+        // determine the end location if shall be random
+        var eLoc =
+            if (randomStartAndEndLocs)
+                Point(rInt.nextInt(if (isClosed) 1 else 0, if (isClosed) height - 1 else height), rInt.nextInt(if (isClosed) 1 else 0, if (isClosed) width - 1 else width))
+            else
+                endLoc
+        // the end location mustn't be the same as start location
+        while (eLoc == sLoc)
+            eLoc =
+                if (randomStartAndEndLocs || endLoc == sLoc)
+                    Point(rInt.nextInt(if (isClosed) 1 else 0, if (isClosed) height - 1 else height), rInt.nextInt(if (isClosed) 1 else 0, if (isClosed) width - 1 else width))
+                else
+                    endLoc
+        // endregion
+
+        // create the maze-model
         mMazeModel = Maze.Builder()
             .setSize(width, height)
             .setIsClosed(isClosed)
-            .setStartLocation(startLoc.y, startLoc.x)
-            .setEndLocation(endLoc.y, endLoc.x)
+            .setStartLocation(sLoc.y, sLoc.x)
+            .setEndLocation(eLoc.y, eLoc.x)
             .create()
+        makeMove(0, 0)
         Log.e("MAZE", mMazeModel.toString())
+
+        // re-render
         invalidate()
     }
 
@@ -120,7 +150,7 @@ class MazeView(context: Context, attrs: AttributeSet?): View(context, attrs) {
                 // calculate the block's size
                 val blockSize = (width - 2 * MARGIN_OF_BLOCKS) / min(maze.width, NUMBER_OF_COLS_ON_SCREEN)
                 // calculate the gap among blocks (block-padding)
-                val gap = blockSize / 20.0F
+                val gap = blockSize / 30.0F
                 // get the blocks from the maze-model
                 val blocks = maze.blocksCopied
 
