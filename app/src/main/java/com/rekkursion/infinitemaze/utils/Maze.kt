@@ -4,6 +4,12 @@ class Maze private constructor() {
     class Builder {
         private val mInstance = Maze()
 
+        // set the level of this maze
+        fun setLevel(level: Int): Builder {
+            mInstance.mLevel = level
+            return this
+        }
+
         // set the size of this maze
         fun setSize(width: Int = mInstance.mWidth, height: Int = mInstance.mHeight): Builder {
             mInstance.mWidth = width
@@ -44,6 +50,9 @@ class Maze private constructor() {
 
     /* ================================================================ */
 
+    private var mLevel: Int? = null
+    val level get() = mLevel
+
     // width of the maze
     private var mWidth = 1
     val width get() = mWidth
@@ -60,6 +69,7 @@ class Maze private constructor() {
 
     // the end location of the maze
     private var mEndLoc = Point(0, 0)
+    val endLocCopied get() = Point(mEndLoc)
 
     // the current location, initially set to the start location
     private var mCurLoc = Point(mStartLoc)

@@ -13,7 +13,7 @@ enum class ArrowType(val dir: Pair<Int, Int>) {
     UP(Pair(-1, 0)), RIGHT(Pair(0, 1)), DOWN(Pair(1, 0)), LEFT(Pair(0, -1))
 }
 
-class ControlBar(context: Context, attrs: AttributeSet? = null) : FrameLayout(context, attrs) {
+class ControlBar(context: Context, attrs: AttributeSet? = null): FrameLayout(context, attrs) {
     // the context of this view
     private val mContext = context
 

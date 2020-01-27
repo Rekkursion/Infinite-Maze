@@ -6,11 +6,15 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import android.widget.Toast
+import androidx.annotation.UiThread
 import androidx.core.content.res.ResourcesCompat
 import com.rekkursion.infinitemaze.R
+import com.rekkursion.infinitemaze.activity.MazeActivity
 import com.rekkursion.infinitemaze.utils.BlockType
 import com.rekkursion.infinitemaze.utils.Maze
 import com.rekkursion.infinitemaze.utils.Point
+import java.util.logging.Handler
 import kotlin.math.max
 import kotlin.math.min
 
@@ -36,7 +40,6 @@ open class MazeView(context: Context, attrs: AttributeSet? = null): View(context
 
     // the model of the maze
     private var mMazeModel: Maze? = null
-    val mazeModel get() = mMazeModel
 
     // the location of the camera
     private val mCamera = Point(0, 0)
@@ -51,8 +54,9 @@ open class MazeView(context: Context, attrs: AttributeSet? = null): View(context
 
     /* ================================================================ */
 
-    // set the maze
+    // region set the maze
     fun setMaze(
+        level: Int,
         width: Int,
         height: Int,
         isClosed: Boolean = true,
@@ -86,6 +90,7 @@ open class MazeView(context: Context, attrs: AttributeSet? = null): View(context
 
         // create the maze-model
         mMazeModel = Maze.Builder()
+            .setLevel(level)
             .setSize(width, height)
             .setIsClosed(isClosed)
             .setStartLocation(sLoc.y, sLoc.x)
@@ -97,9 +102,10 @@ open class MazeView(context: Context, attrs: AttributeSet? = null): View(context
         // re-render
         invalidate()
     }
+    // endregion
 
     // move
-    fun makeMove(dy: Int, dx: Int) {
+    fun makeMove(dy: Int, dx: Int): Boolean {
         mMazeModel?.let { maze ->
             // move the current location
             maze.moveCurrentLocation(dy, dx)
@@ -126,7 +132,78 @@ open class MazeView(context: Context, attrs: AttributeSet? = null): View(context
 
             // re-render
             invalidate()
+
+            // check if reaches the end location
+            if (maze.curLocCopied == maze.endLocCopied)
+                return true
         }
+
+        return false
+    }
+
+    private fun renderMaze(canvas: Canvas) {
+        // if the maze-model is not a null
+        mMazeModel?.let { maze ->
+            // calculate the block's size
+            val blockSize = (width - 2 * MARGIN_OF_BLOCKS) / min(maze.width, NUMBER_OF_COLS_ON_SCREEN)
+            // calculate the gap among blocks (block-padding)
+            val gap = blockSize / RATIO_BETWEEN_BLOCK_SIZE_AND_GAP
+            // get the blocks from the maze-model
+            val blocks = maze.blocksCopied
+
+            // iterate by row in the range of camera-y + number-of-cols-on-screen
+            for (k in 0 until NUMBER_OF_COLS_ON_SCREEN) {
+                // iterate by column in the range of camera-x + number-of-cols-on-screen
+                for (j in 0 until NUMBER_OF_COLS_ON_SCREEN) {
+                    val rowIdx = k + mCamera.y
+                    val colIdx = j + mCamera.x
+
+                    // if the axis is in the range of the maze-model's size
+                    if (rowIdx < maze.height && colIdx < maze.width) {
+                        // create a rect-f for rendering
+                        val rect = RectF(
+                            j * blockSize + gap + MARGIN_OF_BLOCKS,
+                            k * blockSize + gap + MARGIN_OF_BLOCKS,
+                            (j + 1) * blockSize - gap + MARGIN_OF_BLOCKS,
+                            (k + 1) * blockSize - gap + MARGIN_OF_BLOCKS
+                        )
+
+                        // set the color
+                        mPaint.color =
+                            if (rowIdx == maze.curY && colIdx == maze.curX)
+                                BlockType.CURRENT.colorValueOnMazeView
+                            else
+                                blocks[rowIdx][colIdx].colorValueOnMazeView
+
+                        // render
+                        canvas.drawRect(rect, mPaint)
+                    }
+                }
+            }
+        } // end of maze-model?.let
+    }
+
+    private fun renderCoordinates(canvas: Canvas) {
+        // if the maze-model is not a null
+        mMazeModel?.let { maze ->
+            // calculate the text's bounds to get the length of the to-be-drawn text
+            val text = maze.curLocCopied.toString()
+            val textBound = Rect()
+            mPaint.getTextBounds(text, 0, text.length, textBound)
+
+            // render the text of the current location: (y, x)
+            mPaint.color = Color.BLACK
+            canvas.drawText(text, width - textBound.width() - MARGIN_OF_BLOCKS, width.toFloat() + TEXT_SIZE / 2.0F + MARGIN_OF_BLOCKS, mPaint)
+        } // end of maze-model?.let
+    }
+
+    private fun renderLevel(canvas: Canvas) {
+        mMazeModel?.let { maze ->
+            maze.level?.let { level ->
+                mPaint.color = Color.BLACK
+                canvas.drawText("Level $level", MARGIN_OF_BLOCKS, width.toFloat() + TEXT_SIZE / 2.0F + MARGIN_OF_BLOCKS, mPaint)
+            }
+        } // end of maze-model?.let
     }
 
     /* ================================================================ */
@@ -146,54 +223,9 @@ open class MazeView(context: Context, attrs: AttributeSet? = null): View(context
     override fun onDraw(canvas: Canvas?) {
         // if the canvas is not a null
         canvas?.let {
-            // if the maze-model is not a null
-            mMazeModel?.let { maze ->
-                // calculate the block's size
-                val blockSize = (width - 2 * MARGIN_OF_BLOCKS) / min(maze.width, NUMBER_OF_COLS_ON_SCREEN)
-                // calculate the gap among blocks (block-padding)
-                val gap = blockSize / RATIO_BETWEEN_BLOCK_SIZE_AND_GAP
-                // get the blocks from the maze-model
-                val blocks = maze.blocksCopied
-
-                // iterate by row in the range of camera-y + number-of-cols-on-screen
-                for (k in 0 until NUMBER_OF_COLS_ON_SCREEN) {
-                    // iterate by column in the range of camera-x + number-of-cols-on-screen
-                    for (j in 0 until NUMBER_OF_COLS_ON_SCREEN) {
-                        val rowIdx = k + mCamera.y
-                        val colIdx = j + mCamera.x
-
-                        // if the axis is in the range of the maze-model's size
-                        if (rowIdx < maze.height && colIdx < maze.width) {
-                            // create a rect-f for rendering
-                            val rect = RectF(
-                                j * blockSize + gap + MARGIN_OF_BLOCKS,
-                                k * blockSize + gap + MARGIN_OF_BLOCKS,
-                                (j + 1) * blockSize - gap + MARGIN_OF_BLOCKS,
-                                (k + 1) * blockSize - gap + MARGIN_OF_BLOCKS
-                            )
-
-                            // set the color
-                            mPaint.color =
-                                if (rowIdx == maze.curY && colIdx == maze.curX)
-                                    BlockType.CURRENT.colorValueOnMazeView
-                                else
-                                    blocks[rowIdx][colIdx].colorValueOnMazeView
-
-                            // render
-                            canvas.drawRect(rect, mPaint)
-                        }
-                    }
-                }
-
-                // calculate the text's bounds to get the length of the to-be-drawn text
-                val text = maze.curLocCopied.toString()
-                val textBound = Rect()
-                mPaint.getTextBounds(text, 0, text.length, textBound)
-
-                // render the text of the current location: (y, x)
-                mPaint.color = Color.BLACK
-                canvas.drawText(maze.curLocCopied.toString(), width - textBound.width() - MARGIN_OF_BLOCKS, width.toFloat() + TEXT_SIZE / 2.0F + MARGIN_OF_BLOCKS, mPaint)
-            } // end of maze-model?.let
+            renderMaze(canvas)
+            renderCoordinates(canvas)
+            renderLevel(canvas)
         } // end of canvas?.let
     }
 }
