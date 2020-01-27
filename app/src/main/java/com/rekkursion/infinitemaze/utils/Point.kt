@@ -46,6 +46,6 @@ class Point<T>(y: T, x: T) {
     }
 
     override fun toString(): String {
-        return String.format("(%02d, %02d)", mY, mX)
+        return String.format("(Y: %02d, X: %02d)", mY, mX)
     }
 }

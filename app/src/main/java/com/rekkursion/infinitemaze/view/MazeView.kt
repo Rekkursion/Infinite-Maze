@@ -2,10 +2,7 @@ package com.rekkursion.infinitemaze.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -17,7 +14,7 @@ import com.rekkursion.infinitemaze.utils.Point
 import kotlin.math.max
 import kotlin.math.min
 
-class MazeView(context: Context, attrs: AttributeSet?): View(context, attrs) {
+open class MazeView(context: Context, attrs: AttributeSet? = null): View(context, attrs) {
     companion object {
         // the margin of the blocks
         private const val MARGIN_OF_BLOCKS = 23.3F
@@ -27,6 +24,9 @@ class MazeView(context: Context, attrs: AttributeSet?): View(context, attrs) {
 
         // the text size of the showing current location
         private const val TEXT_SIZE = 75.0F
+
+        // the ratio between block-size and gap
+        private const val RATIO_BETWEEN_BLOCK_SIZE_AND_GAP = 30.0F
     }
 
     /* ================================================================ */
@@ -36,6 +36,7 @@ class MazeView(context: Context, attrs: AttributeSet?): View(context, attrs) {
 
     // the model of the maze
     private var mMazeModel: Maze? = null
+    val mazeModel get() = mMazeModel
 
     // the location of the camera
     private val mCamera = Point(0, 0)
@@ -150,7 +151,7 @@ class MazeView(context: Context, attrs: AttributeSet?): View(context, attrs) {
                 // calculate the block's size
                 val blockSize = (width - 2 * MARGIN_OF_BLOCKS) / min(maze.width, NUMBER_OF_COLS_ON_SCREEN)
                 // calculate the gap among blocks (block-padding)
-                val gap = blockSize / 30.0F
+                val gap = blockSize / RATIO_BETWEEN_BLOCK_SIZE_AND_GAP
                 // get the blocks from the maze-model
                 val blocks = maze.blocksCopied
 
@@ -184,9 +185,14 @@ class MazeView(context: Context, attrs: AttributeSet?): View(context, attrs) {
                     }
                 }
 
+                // calculate the text's bounds to get the length of the to-be-drawn text
+                val text = maze.curLocCopied.toString()
+                val textBound = Rect()
+                mPaint.getTextBounds(text, 0, text.length, textBound)
+
                 // render the text of the current location: (y, x)
                 mPaint.color = Color.BLACK
-                canvas.drawText(maze.curLocCopied.toString(), MARGIN_OF_BLOCKS, width.toFloat() + TEXT_SIZE / 2.0F + MARGIN_OF_BLOCKS, mPaint)
+                canvas.drawText(maze.curLocCopied.toString(), width - textBound.width() - MARGIN_OF_BLOCKS, width.toFloat() + TEXT_SIZE / 2.0F + MARGIN_OF_BLOCKS, mPaint)
             } // end of maze-model?.let
         } // end of canvas?.let
     }

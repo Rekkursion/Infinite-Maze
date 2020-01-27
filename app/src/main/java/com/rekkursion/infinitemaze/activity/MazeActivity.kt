@@ -2,15 +2,11 @@ package com.rekkursion.infinitemaze.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.CheckedTextView
-import android.widget.Toast
 import com.rekkursion.infinitemaze.R
-import com.rekkursion.infinitemaze.utils.Maze
-import com.rekkursion.infinitemaze.utils.Point
 import com.rekkursion.infinitemaze.view.ArrowType
 import com.rekkursion.infinitemaze.view.ControlBar
 import com.rekkursion.infinitemaze.view.MazeView
+import com.rekkursion.infinitemaze.view.SmallMap
 
 class MazeActivity: AppCompatActivity() {
     // the maze-view
@@ -39,12 +35,17 @@ class MazeActivity: AppCompatActivity() {
         // events of clicking arrow-keys
         mControlBar.setOnArrowKeyClickListener(object: ControlBar.OnArrowKeyClickListener {
             override fun onArrowKeyClick(arrowType: ArrowType) {
-                mMazeView.makeMove(arrowType.dir.first, arrowType.dir.second)
+                moveInMaze(arrowType)
             }
         })
 
         mMazeView.setOnClickListener {
             mMazeView.setMaze(50, 50)
         }
+    }
+
+    // move in the maze and update the maze-view and small-map
+    private fun moveInMaze(arrowType: ArrowType) {
+        mMazeView.makeMove(arrowType.dir.first, arrowType.dir.second)
     }
 }

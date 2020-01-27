@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.view.animation.*
 import android.widget.Button
 
-class EffectButton(context: Context, attrs: AttributeSet?): Button(context, attrs) {
+class EffectButton(context: Context, attrs: AttributeSet? = null): Button(context, attrs) {
     // the passed context
     private val mContext = context
 
